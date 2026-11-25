@@ -14,9 +14,13 @@ Scanner quotidien de setups sur futures (ES, NQ, CL, GC) : probabilités calibr�
 <!-- TODO : schéma -->
 
 ## Démarrage rapide
+Prérequis : [uv](https://docs.astral.sh/uv/) (installe Python 3.12 automatiquement).
+
 ```bash
-pip install -e ".[dev]"
-python -m edgescan scan --source synthetic --dry-run
+make install   # .venv + dépendances + hook pre-commit
+make test      # tests
+make lint      # style (ruff)
+make run       # scan de démonstration sur données synthétiques
 ```
 
 ## Choix méthodologiques

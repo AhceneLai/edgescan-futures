@@ -1,4 +1,5 @@
 """Espérance nette, taille de position et Monte Carlo du P&L de la journée."""
+
 import pandas as pd
 
 

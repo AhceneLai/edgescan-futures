@@ -1,4 +1,5 @@
 """Point d'entrée : python -m edgescan {scan,backtest,review}"""
+
 import argparse
 
 import yaml

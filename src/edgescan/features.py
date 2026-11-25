@@ -1,4 +1,5 @@
 """Indicateurs calculés à la clôture de J, avec des données <= J uniquement."""
+
 import pandas as pd
 
 

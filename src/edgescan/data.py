@@ -1,4 +1,5 @@
 """Chargement des données journalières OHLCV (yfinance, CSV ou synthétique)."""
+
 import pandas as pd
 
 

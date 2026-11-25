@@ -1,4 +1,5 @@
 """Signaux -> trades -> issues labellisées (stop / target / timeout), frais inclus."""
+
 import pandas as pd
 
 OUTCOMES = ["stop", "timeout", "target"]

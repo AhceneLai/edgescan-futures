@@ -15,7 +15,7 @@ dependencies = [
 
 [project.optional-dependencies]
 live = ["yfinance>=0.2.40", "lightgbm>=4.0"]
-dev = ["pytest>=8.0", "ruff>=0.5"]
+dev = ["pytest>=8.0", "ruff>=0.17", "pre-commit>=4.0"]
 
 [project.scripts]
 edgescan = "edgescan.cli:main"
@@ -29,3 +29,9 @@ testpaths = ["tests"]
 
 [tool.ruff]
 line-length = 130
+target-version = "py311"
+
+[tool.ruff.lint]
+# E/W : style PEP 8, F : erreurs (pyflakes), I : tri des imports,
+# UP : syntaxe Python moderne, B : bugs fréquents (bugbear)
+select = ["E", "F", "W", "I", "UP", "B"]

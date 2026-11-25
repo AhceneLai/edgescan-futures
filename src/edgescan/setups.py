@@ -1,4 +1,5 @@
 """Setups journaliers définis à l'avance. Signal à la clôture de J, trade à J+1."""
+
 import pandas as pd
 
 SETUP_RATIONALE = {
