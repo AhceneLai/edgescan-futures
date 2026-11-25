@@ -1,5 +1,5 @@
 # ---------------------------------------------------------------
-# Futures Daily Scanner - configuration
+# EdgeScan - configuration
 # ---------------------------------------------------------------
 
 # Contrats suivis. symbol = ticker yfinance (contrat continu) ou nom du CSV dans data/raw/

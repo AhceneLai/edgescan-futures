@@ -25,6 +25,9 @@ make lint      # style (ruff)
 make run       # scan de démonstration sur données synthétiques
 ```
 
+## Données
+Fournisseurs, coûts et configuration des accès : [docs/DATA_PROVIDERS.md](docs/DATA_PROVIDERS.md).
+
 ## Choix méthodologiques
 <!-- TODO -->
 
