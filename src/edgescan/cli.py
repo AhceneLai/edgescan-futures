@@ -1,11 +1,11 @@
-"""Point d'entrée : python -m fds {scan,backtest,review}"""
+"""Point d'entrée : python -m edgescan {scan,backtest,review}"""
 import argparse
 
 import yaml
 
 
 def main(argv=None) -> None:
-    p = argparse.ArgumentParser(prog="fds", description="Futures Daily Scanner")
+    p = argparse.ArgumentParser(prog="edgescan", description="EdgeScan — scanner de futures")
     p.add_argument("command", choices=["scan", "backtest", "review"])
     p.add_argument("--config", default="config.yaml")
     p.add_argument("--source", default="yfinance", choices=["yfinance", "csv", "synthetic"])

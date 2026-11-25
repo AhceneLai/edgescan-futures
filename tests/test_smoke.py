@@ -8,4 +8,4 @@ def test_config_loads():
 
 
 def test_package_imports():
-    import fds.cli  # noqa: F401
+    import edgescan.cli  # noqa: F401

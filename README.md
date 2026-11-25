@@ -1,4 +1,4 @@
-# Futures Daily Scanner
+# EdgeScan
 
 Scanner quotidien de setups sur futures (ES, NQ, CL, GC) : probabilités calibrées, espérance nette de frais, justification de chaque trade et alertes.
 
@@ -16,7 +16,7 @@ Scanner quotidien de setups sur futures (ES, NQ, CL, GC) : probabilités calibr�
 ## Démarrage rapide
 ```bash
 pip install -e ".[dev]"
-python -m fds scan --source synthetic --dry-run
+python -m edgescan scan --source synthetic --dry-run
 ```
 
 ## Choix méthodologiques

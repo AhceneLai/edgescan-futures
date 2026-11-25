@@ -3,8 +3,9 @@ requires = ["setuptools>=68"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "futures-daily-scanner"
+name = "edgescan"
 version = "0.1.0"
+license = { text = "MIT" }
 description = "Scanner quotidien de setups sur futures : probabilités calibrées, espérance nette, alertes."
 requires-python = ">=3.11"
 dependencies = [
@@ -17,7 +18,7 @@ live = ["yfinance>=0.2.40", "lightgbm>=4.0"]
 dev = ["pytest>=8.0", "ruff>=0.5"]
 
 [project.scripts]
-fds = "fds.cli:main"
+edgescan = "edgescan.cli:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
