@@ -1,0 +1,61 @@
+# ---------------------------------------------------------------
+# Futures Daily Scanner - configuration
+# ---------------------------------------------------------------
+
+# Contrats suivis. symbol = ticker yfinance (contrat continu) ou nom du CSV dans data/raw/
+# multiplier = valeur en $ d'un point ; tick = plus petit pas de cotation
+contracts:
+  ES: { symbol: "ES=F", name: "E-mini S&P 500",  multiplier: 50,   tick: 0.25 }
+  NQ: { symbol: "NQ=F", name: "E-mini Nasdaq-100", multiplier: 20, tick: 0.25 }
+  CL: { symbol: "CL=F", name: "Crude Oil WTI",   multiplier: 1000, tick: 0.01 }
+  GC: { symbol: "GC=F", name: "Gold",            multiplier: 100,  tick: 0.10 }
+
+# Frais réalistes, par contrat et par côté (entrée OU sortie)
+costs:
+  commission_per_side: 2.50      # $
+  slippage_ticks_per_side: 1     # ticks
+
+# Gestion du risque
+account:
+  equity: 100000                 # $
+  risk_per_trade_pct: 0.5        # % du capital risqué par trade (distance au stop)
+  max_trades_per_day: 3
+
+# Setups : stop et objectif exprimés en multiples d'ATR(14) de la veille.
+# Tous les trades : entrée à l'ouverture du jour J+1, sortie au stop, à l'objectif
+# ou à la clôture de J+1 (horizon = 1 séance).
+# Ordre de grandeur : sur une séance, le prix s'éloigne en moyenne d'environ 0,5 ATR
+# de son ouverture dans chaque sens. Des distances > 1 ATR ne sont presque jamais
+# atteintes en une journée (le trade finit alors quasi toujours "à la clôture").
+setups:
+  trend_pullback:      { stop_atr: 0.5, target_atr: 0.75 }
+  donchian_breakout:   { stop_atr: 0.5, target_atr: 1.0 }
+  nr7_breakout:        { stop_atr: 0.4, target_atr: 0.8 }
+  bollinger_reversion: { stop_atr: 0.5, target_atr: 0.5 }
+
+# Modèle et validation walk-forward
+model:
+  min_train_samples: 400         # sous ce seuil -> fréquences historiques par setup
+  retrain_every_days: 63         # ~ un trimestre de séances
+  calibration: sigmoid           # sigmoid (robuste) ou isotonic (beaucoup de données)
+  random_state: 42
+
+# Filtres pour qu'un setup devienne une "opportunité"
+selection:
+  min_prob_target: 0.30
+  min_expected_r: 0.10           # espérance minimale nette de frais, en R
+
+# Simulation Monte Carlo du P&L de la journée
+montecarlo:
+  n_sims: 20000
+
+# Alertes (les secrets se mettent dans des variables d'environnement, jamais ici)
+alerts:
+  telegram: true                 # TELEGRAM_BOT_TOKEN + TELEGRAM_CHAT_ID
+  discord: false                 # DISCORD_WEBHOOK_URL
+
+paths:
+  raw_data: data/raw
+  macro_calendar: data/macro_calendar.csv
+  reports: reports
+  signal_log: data/signal_log.csv
