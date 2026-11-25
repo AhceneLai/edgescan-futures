@@ -10,3 +10,6 @@ reports/*.md
 # macOS
 .DS_Store
 .ruff_cache/
+
+# Fichiers temporaires Office
+~$*

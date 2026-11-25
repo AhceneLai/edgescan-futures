@@ -1,5 +1,7 @@
 # EdgeScan
 
+[![CI](https://github.com/AhceneLai/edgescan-futures/actions/workflows/ci.yml/badge.svg)](https://github.com/AhceneLai/edgescan-futures/actions/workflows/ci.yml)
+
 Scanner quotidien de setups sur futures (ES, NQ, CL, GC) : probabilités calibrées, espérance nette de frais, justification de chaque trade et alertes.
 
 > 🚧 En construction. Outil d'aide à la décision, pas un conseil en investissement.
