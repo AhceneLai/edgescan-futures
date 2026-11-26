@@ -2,7 +2,7 @@
 VENV := .venv
 BIN  := $(VENV)/bin
 
-.PHONY: help install test lint format run data clean
+.PHONY: help install test lint format run data quality clean
 
 help:  ## Affiche cette aide
 	@grep -E '^[a-z]+:.*##' $(MAKEFILE_LIST) | awk -F':.*## ' '{printf "  make %-8s %s\n", $$1, $$2}'
@@ -26,8 +26,11 @@ format:  ## Corrige le style automatiquement
 run:  ## Scan de démonstration sur données synthétiques, sans envoyer d'alerte
 	$(BIN)/edgescan scan --source synthetic --dry-run
 
-data:  ## Télécharge / met à jour les barres journalières Yahoo dans data/raw/
+data:  ## Télécharge / met à jour les barres journalières Yahoo et les enregistre dans data/store/
 	$(BIN)/edgescan download
+
+quality:  ## Contrôle qualité des données -> reports/data_quality.md
+	$(BIN)/edgescan quality
 
 clean:  ## Supprime les caches
 	rm -rf .pytest_cache .ruff_cache build src/*.egg-info

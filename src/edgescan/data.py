@@ -156,8 +156,10 @@ def load_csv(path: str | Path) -> pd.DataFrame:
 
 
 def make_synthetic(key: str, n_days: int = 2600, seed: int = 0) -> pd.DataFrame:
-    # TODO (tâche 1.7) : générer des prix simulés pour tester sans internet
-    raise NotImplementedError
+    """Barres simulées reproductibles (voir edgescan.synthetic)."""
+    from .synthetic import make_synthetic as generate  # import local : synthetic dépend de sessions, qui dépend de data
+
+    return generate(key, n_days=n_days, seed=seed)
 
 
 def load_all(contracts: dict, source: str, raw_dir: str | Path = "data/raw") -> dict[str, pd.DataFrame]:

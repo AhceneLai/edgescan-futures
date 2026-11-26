@@ -4,6 +4,7 @@ __pycache__/
 .env
 .pytest_cache/
 data/raw/
+data/store/
 data/signal_log.csv
 reports/*.md
 

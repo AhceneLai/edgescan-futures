@@ -55,7 +55,8 @@ alerts:
   discord: false                 # DISCORD_WEBHOOK_URL
 
 paths:
-  raw_data: data/raw
+  raw_data: data/raw              # cache des téléchargements (CSV)
+  store: data/store               # base Parquet + DuckDB (barres propres, signaux)
   macro_calendar: data/macro_calendar.csv
   reports: reports
   signal_log: data/signal_log.csv

@@ -23,6 +23,7 @@ make install   # .venv + dépendances + hook pre-commit
 make test      # tests
 make lint      # style (ruff)
 make data      # télécharge les barres journalières (Yahoo, gratuit)
+make quality   # rapport qualité des données
 make run       # scan de démonstration sur données synthétiques
 ```
 
