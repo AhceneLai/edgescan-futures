@@ -7,7 +7,10 @@ from pathlib import Path
 import yaml
 
 from . import data
+from .features import compute_features
+from .levels import daily_levels, describe_plan, trade_plan
 from .quality import check_bars, to_markdown
+from .setups import detect_setups
 from .storage import Store
 
 
@@ -34,6 +37,30 @@ def quality(cfg: dict, source: str) -> None:
     print(f"Rapport écrit dans {out}")
 
 
+def scan(cfg: dict, source: str) -> None:
+    """Setups détectés à la dernière clôture, avec leur justification et leur plan de trade.
+
+    Pas encore de probabilités (phase 3) : ce ne sont que des situations à étudier, pas des recommandations.
+    """
+    bars = data.load_all(cfg["contracts"], source, raw_dir=cfg["paths"]["raw_data"])
+    found = 0
+    for key, df in bars.items():
+        feat = compute_features(df)
+        last = df.index[-1]
+        signals = detect_setups(feat.loc[[last]], cfg["setups"], symbol=key)
+        levels = daily_levels(df, feat).loc[last]
+        for _, sig in signals.iterrows():
+            found += 1
+            plan = trade_plan(sig, levels)
+            print(f"\n{key} — {sig['setup']} {sig['direction'].upper()}  (clôture du {last:%Y-%m-%d})")
+            print(f"  Pourquoi : {sig['reason']}")
+            print(f"  Logique  : {sig['rationale']}")
+            print(f"  Plan     : {describe_plan(plan, sig['direction'])}")
+    if not found:
+        print("Aucun setup à la dernière clôture.")
+    print("\nRappel : probabilités et taille de position pas encore calculées (phases 3 et 5). Pas un conseil.")
+
+
 def main(argv=None) -> None:
     p = argparse.ArgumentParser(prog="edgescan", description="EdgeScan — scanner de futures")
     p.add_argument("command", choices=["download", "quality", "scan", "backtest", "review"])
@@ -49,5 +76,7 @@ def main(argv=None) -> None:
         download(cfg, a.source)
     elif a.command == "quality":
         quality(cfg, a.source)
+    elif a.command == "scan":
+        scan(cfg, a.source)
     else:
         print(f"Commande '{a.command}' pas encore implémentée ({len(cfg['contracts'])} contrats configurés).")
