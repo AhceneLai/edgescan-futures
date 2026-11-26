@@ -7,10 +7,12 @@ from pathlib import Path
 import yaml
 
 from . import data
+from .dataset import build_dataset
 from .features import compute_features
 from .levels import daily_levels, describe_plan, trade_plan
+from .model import BaselineModel, ProbModel, similar_trades, summarize_similar
 from .quality import check_bars, to_markdown
-from .setups import detect_setups
+from .setups import fr
 from .storage import Store
 
 
@@ -38,27 +40,51 @@ def quality(cfg: dict, source: str) -> None:
 
 
 def scan(cfg: dict, source: str) -> None:
-    """Setups détectés à la dernière clôture, avec leur justification et leur plan de trade.
+    """Setups détectés à la dernière clôture : justification, plan, probabilités et trades comparables.
 
-    Pas encore de probabilités (phase 3) : ce ne sont que des situations à étudier, pas des recommandations.
+    Pas encore d'espérance ni de taille de position (phase 5), ni de validation walk-forward (phase 4) :
+    ce sont des situations à étudier, pas des recommandations.
     """
     bars = data.load_all(cfg["contracts"], source, raw_dir=cfg["paths"]["raw_data"])
-    found = 0
-    for key, df in bars.items():
-        feat = compute_features(df)
-        last = df.index[-1]
-        signals = detect_setups(feat.loc[[last]], cfg["setups"], symbol=key)
-        levels = daily_levels(df, feat).loc[last]
-        for _, sig in signals.iterrows():
-            found += 1
-            plan = trade_plan(sig, levels)
-            print(f"\n{key} — {sig['setup']} {sig['direction'].upper()}  (clôture du {last:%Y-%m-%d})")
-            print(f"  Pourquoi : {sig['reason']}")
-            print(f"  Logique  : {sig['rationale']}")
-            print(f"  Plan     : {describe_plan(plan, sig['direction'])}")
-    if not found:
+    trades, tonight = build_dataset(bars, cfg)
+    if tonight.empty:
         print("Aucun setup à la dernière clôture.")
-    print("\nRappel : probabilités et taille de position pas encore calculées (phases 3 et 5). Pas un conseil.")
+        return
+
+    model = ProbModel(cfg["model"]).fit(trades)
+    baseline = BaselineModel().fit(trades).predict_proba(tonight)
+    probs = model.predict_proba(tonight)
+    factors = model.explain(tonight)
+    engine = "fréquences historiques (trop peu de trades)" if model.uses_baseline_ else "gradient boosting calibré"
+    print(f"Modèle : {engine}, appris sur {model.n_train_} trades passés.")
+
+    for i, sig in tonight.iterrows():
+        key, last = sig["symbol"], sig["date"]
+        df = bars[key]
+        plan = trade_plan(sig, daily_levels(df, compute_features(df)).loc[last])
+        p, b = probs.loc[i], baseline.loc[i]
+        similar = summarize_similar(similar_trades(trades, sig))
+
+        print(f"\n{key} — {sig['setup']} {sig['direction'].upper()}  (clôture du {last:%Y-%m-%d})")
+        print(f"  Pourquoi    : {sig['reason']}")
+        print(f"  Logique     : {sig['rationale']}")
+        print(f"  Plan        : {describe_plan(plan, sig['direction'])}")
+        print(
+            f"  Probabilités: objectif {p['p_target']:.0%} · stop {p['p_stop']:.0%} · clôture {p['p_close']:.0%}"
+            f"   (fréquence habituelle du setup : objectif {b['p_target']:.0%})"
+        )
+        if factors[i]:
+            print("  Facteurs principaux (valeurs vues du côté du trade : > 0 = dans son sens) :")
+        for f in factors[i]:
+            arrow = "↑" if f["shap"] > 0 else "↓"
+            print(f"    {arrow} {f['label']} = {fr(f['value'], 2)}")
+        if similar["n"]:
+            print(
+                f"  {similar['n']} trades comparables : objectif {similar['freq_target']:.0%}, stop {similar['freq_stop']:.0%}, "
+                f"clôture {similar['freq_close']:.0%}, R net moyen {fr(similar['mean_net_r'], 2)}"
+            )
+    print("\nRappel : probabilités non encore validées en walk-forward (phase 4), pas d'espérance ni de taille (phase 5).")
+    print("Outil d'aide à la décision, pas un conseil en investissement.")
 
 
 def main(argv=None) -> None:

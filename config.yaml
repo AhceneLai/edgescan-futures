@@ -37,7 +37,7 @@ setups:
 model:
   min_train_samples: 400         # sous ce seuil -> fréquences historiques par setup
   retrain_every_days: 63         # ~ un trimestre de séances
-  calibration: sigmoid           # sigmoid (robuste) ou isotonic (beaucoup de données)
+  calibration_folds: 4           # plis temporels pour apprendre la calibration (multinomiale)
   random_state: 42
 
 # Filtres pour qu'un setup devienne une "opportunité"
